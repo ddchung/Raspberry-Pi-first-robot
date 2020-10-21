@@ -15,7 +15,26 @@ class Robot(object):
         atexit.register(self.stop_motors)
         
     def convert_speed(self, speed):
-        return (speed * 255) / 100
+        # Choose the running mode
+        mode = Raspi_MotorHAT.RELEASE
+        if speed > 0:
+            mode = Raspi_MotorHAT.FORWARD
+        elif speed < 0:
+            mode = Raspi_MotorHAT.BACKWARD
+            
+        # scale the speed
+        output_speed = (abs (speed)*255)/100
+        return mode, int(output_speed)
+        
+    def set_left(self, speed):
+        mode,output_speed = self.convert_speed(speed)
+        self.left_motor.setSpeed(output_speed)
+        self.left_motor.run(mode)
+        
+    def set_right(self, speed):
+        mode,output_speed = self.convert_speed(speed)
+        self.right_motor.setSpeed(output_speed)
+        self.right_motor.run(mode)
         
         
     def stop_motors(self):
